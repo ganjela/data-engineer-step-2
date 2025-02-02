@@ -4,6 +4,20 @@ from typing import Dict, Any
 
 def transform_collections(raw_data: Dict[str, Any]) -> pd.DataFrame:
     
+    """
+    This function takes a dictionary of raw OpenSea data and transforms it into a pandas DataFrame,
+    dropping any rows with missing required fields, and adding a new column that counts the number
+    of collections each owner has. The returned DataFrame has the following columns:
+    - collection: The slug of the NFT collection
+    - name: The name of the NFT collection
+    - description: A description of the NFT collection
+    - image_url: The URL of the NFT collection's image
+    - owner: The address of the NFT collection's owner
+    - twitter_username: The Twitter username of the NFT collection's owner
+    - contracts: A stringified list of contract addresses associated with the NFT collection
+    - owner_collection_count: The number of collections the NFT collection's owner has
+    """
+    
     collections = raw_data.get("collections", [])
     
     if not collections:

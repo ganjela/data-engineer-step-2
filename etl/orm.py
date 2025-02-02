@@ -6,21 +6,40 @@ class ORM:
         self.conn = sqlite3.connect(db_path)
         self.cur = self.conn.cursor()
 
-    # Database/Table Management
+    # Table Management
     def create_table(self, table_name: str, schema: str) -> None:
+        """
+        Creates a new table in the database if it does not exist.
+        """
+
         self.cur.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({schema})")
         self.conn.commit()
 
     def drop_table(self, table_name: str) -> None:
+        """
+        Drops a table from the database if it exists.
+        """
+
         self.cur.execute(f"DROP TABLE IF EXISTS {table_name}")
         self.conn.commit()
 
     # Schema Management
     def add_column(self, table_name: str, column_name: str, data_type: str) -> None:
+        """
+        Adds a new column to a table in the database if it does not exist.
+        """
+
         self.cur.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {data_type}")
         self.conn.commit()
 
     def remove_column(self, table_name: str, column_name: str) -> None:
+        """
+        Removes a column from a table in the database if it exists.
+
+        This operation is potentially slow as it involves creating a new table
+        and copying all the data over.
+        """
+
         self.cur.execute(f"PRAGMA table_info({table_name})")
         columns = [col[1] for col in self.cur.fetchall() if col[1] != column_name]
         
@@ -32,6 +51,13 @@ class ORM:
         self.conn.commit()
 
     def change_column_type(self, table_name: str, column_name: str, new_type: str) -> None:
+        """
+        Changes the type of a column in a table in the database.
+
+        This operation is potentially slow as it involves creating a new table
+        and copying all the data over.
+        """
+
         self.cur.execute(f"PRAGMA table_info({table_name})")
         cols = self.cur.fetchall()
         new_cols = [f"{col[1]} {new_type}" if col[1] == column_name else f"{col[1]} {col[2]}" for col in cols]
@@ -46,6 +72,7 @@ class ORM:
     # Data Operations
     def insert(self, table_name: str, data: List[Dict[str, Any]] | Dict[str, Any]) -> None:
         """Insert single or multiple rows."""
+
         if isinstance(data, dict):
             data = [data]
         
@@ -65,6 +92,10 @@ class ORM:
         limit: Optional[int] = None,
         distinct: bool = False
     ) -> List[Any]:
+        """
+        Executes a SELECT query against the database.
+        """
+
         query = ["SELECT"]
         if distinct:
             query.append("DISTINCT")
@@ -81,11 +112,17 @@ class ORM:
         return self.cur.fetchall()
 
     def update(self, table_name: str, set_values: str, where: str) -> None:
+        """
+        Updates records in a specified table based on the given conditions.
+        """
+
         query = f"UPDATE {table_name} SET {set_values} WHERE {where}"
         self.cur.execute(query)
         self.conn.commit()
 
     def delete(self, table_name: str, where: str) -> None:
+        """Deletes records from a specified table based on the given conditions."""
+
         query = f"DELETE FROM {table_name} WHERE {where}"
         self.cur.execute(query)
         self.conn.commit()
@@ -98,6 +135,10 @@ class ORM:
         operator: str = "AND",
         case_sensitive: bool = True
     ) -> List[Any]:
+        """
+        Filters records from a specified table based on the given conditions.
+        """
+
         where_clauses = []
         params = []
         

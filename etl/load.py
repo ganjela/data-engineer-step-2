@@ -5,6 +5,14 @@ import sqlite3
 import os
 
 def load_collections(transformed_data: Union[pd.DataFrame, List[Dict[str, Any]]]) -> None:
+    """
+    Load transformed collection data into the SQLite database.
+
+    This function takes a DataFrame or a list of dictionaries containing
+    collection data and stores it into the 'ethereum_collections' table
+    in the SQLite database located at 'database/opensea.db'.
+    """
+
     orm = ORM('database/opensea.db')
     table_name = 'ethereum_collections'
     

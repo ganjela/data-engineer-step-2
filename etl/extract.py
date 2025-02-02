@@ -2,6 +2,10 @@ import requests
 from typing import Dict, Any
 
 def extract_opensea_collections(api_key: str, chain: str = "ethereum") -> Dict[str, Any]:
+    """
+    Fetches a list of OpenSea collections for a given chain.
+    """
+
     url: str = "https://api.opensea.io/api/v2/collections"
     params: Dict[str, str] = {"chain": chain}
 
